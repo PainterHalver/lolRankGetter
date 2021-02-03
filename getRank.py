@@ -1,27 +1,8 @@
-import base64
 import requests
 import json
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-
-# GET AND PARSE THE 'LOCKFILE'
-try:
-    file = open("D:/LMHT/32787/LeagueClient/lockfile")
-except:
-    input("'lockfile' not found! Maybe open the game first? Press Enter to exit...")
-
-
-lockfile = file.readline().split(":")
-
-port = lockfile[2]
-username = 'riot'
-password = lockfile[3]
-
-# ENCODE TO base64 AUTH CODE
-message = f"{username}:{password}"
-message_bytes = message.encode('ascii')
-base64_bytes = base64.b64encode(message_bytes)
-authCode = base64_bytes.decode('ascii')
+from utils import toBase64
 
 # NAME TO PUUID CODE
 def nameToPuuid(name):
@@ -99,15 +80,6 @@ def lobbyInit():
         points = "points"
         print(f"{name}: {tier} {division} {lp} {points if lp != 1 else point}")
 
-input("Press Enter to init...")
-try:
-    lobbyInit()
-    input("Done! Press Enter when game starts to load...")
-except:
-    quit = input("Can't lobbyInit! Maybe get into a game lobby first? Press Enter to go to gameStartInit or type 'exit' to quit...")
-    if quit == "exit":
-        quit()
-
 
 # GET ENEMY "summonerInternalName" when game starts loading
 def filterAllySumIDs(variable):
@@ -140,10 +112,3 @@ def gameStartInit():
         point = "point"
         points = "points"
         print(f"{name}: {tier} {division} {lp} {points if lp != 1 else point}")
-
-try:
-    gameStartInit()
-    input("The End! Press Enter to exit...")
-except:
-    input("Problem with gameStartInit! Press Enter to exit...")
-    quit()
