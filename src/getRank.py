@@ -4,6 +4,20 @@ import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 from utils import toBase64
 
+SOLODUO = "rank5solo"
+FLEX = "rank5flex"
+CURRENTSEASON = "11"
+
+def gameCount(queueType, puuid, season):
+    url = f"https://127.0.0.1:{toBase64.port}/lol-career-stats/v1/summoner-games/{puuid}/season/{season}"
+    x = requests.get(url, headers={"Authorization": f"Basic {toBase64.authCode}"}, verify=False)
+    y = json.loads(x.text)
+    count = 0
+    for i in y:
+        if i["queueType"] == queueType:
+            count += 1
+    return count
+
 # NAME TO PUUID CODE
 def nameToPuuid(name):
     nameToPuuidUrl = f"https://127.0.0.1:{toBase64.port}/lol-summoner/v1/summoners?name={name}"
@@ -52,6 +66,7 @@ def getAllAllySumID():
     y = json.loads(x.text)
     myTeam = y["myTeam"]
     global allySumIDs
+    allySumIDs = []
     for i in range(len(myTeam)):
         allySumIDs.append(myTeam[i]["summonerId"])
     return allySumIDs
@@ -69,7 +84,10 @@ def lobbyInit():
         lostCount = int(soloStats["losses"])
         point = "point"
         points = "points"
-        print(f"{name}: {tier} {division} {lp} {points if lp != 1 else point}, {winCount} wins {lostCount} losses, {round(winCount/(winCount+lostCount)*100,2)}% winrate")
+        if tier == "NONE":
+            print(f"{name}: Unranked")
+        else:
+            print(f"{name}: {tier} {division} {lp} {points if lp != 1 else point}, {winCount} wins {gameCount(SOLODUO, puuid, CURRENTSEASON)-winCount} losses, {round(winCount/(gameCount(SOLODUO, puuid, CURRENTSEASON))*100,2)}% winrate")
 
 
 # GET ENEMY "summonerInternalName" when game starts loading
@@ -110,4 +128,7 @@ def gameStartInit():
         lostCount = int(soloStats["losses"])
         point = "point"
         points = "points"
-        print(f"{name}: {tier} {division} {lp} {points if lp != 1 else point}, {winCount} wins {lostCount} losses, {round(winCount/(winCount+lostCount)*100,2)}% winrate")
+        if tier == "NONE":
+            print(f"{name}: Unranked")
+        else:
+            print(f"{name}: {tier} {division} {lp} {points if lp != 1 else point}, {winCount} wins {gameCount(SOLODUO, puuid, CURRENTSEASON)-winCount} losses, {round(winCount/(gameCount(SOLODUO, puuid, CURRENTSEASON))*100,2)}% winrate")

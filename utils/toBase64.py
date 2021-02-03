@@ -4,7 +4,7 @@ import base64
 try:
     file = open("D:/LMHT/32787/LeagueClient/lockfile")
 except:
-    input("'lockfile' not found! Maybe open the game first? Press Enter to exit...")
+    input("'lockfile' not found! Maybe open the client first? Press Enter to exit...")
 
 
 lockfile = file.readline().split(":")

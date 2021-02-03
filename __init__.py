@@ -1,9 +1,12 @@
 from src import getRank
 from src import getGameState
 
-print("Game state:", getGameState.getGameState())
-print("1. In lobby")
-print("2. In game loading screen")
+try:
+    print("Game state:", getGameState.getGameState())
+except:
+    print("No game state found, please start the client")
+print("1. In champ select")
+print("2. Game started")
 print("3. Exit")
 
 while True:
