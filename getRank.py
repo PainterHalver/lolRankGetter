@@ -44,17 +44,6 @@ def puuidToRankedSolo(puuid):
     soloStats = (y["queueMap"]["RANKED_SOLO_5x5"])
     return soloStats
 
-
-# def getRankedSolo(name):
-#     puuid = nameToPuuid(name)
-#     soloStats = puuidToRankedSolo(puuid)
-#     tier = soloStats["tier"]
-#     division = soloStats["division"]
-#     lp = soloStats["leaguePoints"]
-#     point = "point"
-#     points = "points"
-#     print(f"{name}: {tier} {division} {lp} {points if lp != 1 else point}")
-
 # GET SUMID IN LOBBY
 allySumIDs = []
 def getAllAllySumID():
