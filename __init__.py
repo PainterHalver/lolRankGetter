@@ -6,7 +6,6 @@ print("1. In lobby")
 print("2. In game loading screen")
 print("3. Exit")
 
-
 while True:
     option = int(input("Your option: "))
     if option == 1:

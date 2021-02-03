@@ -65,9 +65,11 @@ def lobbyInit():
         tier = soloStats["tier"]
         division = soloStats["division"]
         lp = soloStats["leaguePoints"]
+        winCount = int(soloStats["wins"])
+        lostCount = int(soloStats["losses"])
         point = "point"
         points = "points"
-        print(f"{name}: {tier} {division} {lp} {points if lp != 1 else point}")
+        print(f"{name}: {tier} {division} {lp} {points if lp != 1 else point}, {winCount} wins {lostCount} losses, {round(winCount/(winCount+lostCount)*100,2)}% winrate")
 
 
 # GET ENEMY "summonerInternalName" when game starts loading
@@ -104,6 +106,8 @@ def gameStartInit():
         tier = soloStats["tier"]
         division = soloStats["division"]
         lp = soloStats["leaguePoints"]
+        winCount = int(soloStats["wins"])
+        lostCount = int(soloStats["losses"])
         point = "point"
         points = "points"
-        print(f"{name}: {tier} {division} {lp} {points if lp != 1 else point}")
+        print(f"{name}: {tier} {division} {lp} {points if lp != 1 else point}, {winCount} wins {lostCount} losses, {round(winCount/(winCount+lostCount)*100,2)}% winrate")
