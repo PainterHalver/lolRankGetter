@@ -22,7 +22,10 @@ while True:
 
     if option == 2:
         try:
-            getRank.gameStartInit()
+            print("1. Solo/Duo")
+            print("2. Flex")
+            queueType = int(input("Choose queue type: "))
+            getRank.gameStartInit(queueType)
             print("Done!")
         except:
             print("Problem with gameStartInit! Maybe game hasn't started yet?")

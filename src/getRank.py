@@ -55,8 +55,15 @@ def puuidToRankedSolo(puuid):
     puuidToRankedSoloUrl = f"https://127.0.0.1:{toBase64.port}/lol-ranked/v1/ranked-stats/{puuid}"
     x = requests.get(puuidToRankedSoloUrl, headers={"Authorization": f"Basic {toBase64.authCode}"}, verify=False)
     y = json.loads(x.text)
-    soloStats = (y["queueMap"]["RANKED_SOLO_5x5"])
-    return soloStats
+    stats = y["queueMap"]["RANKED_SOLO_5x5"]
+    return stats
+
+def puuidToRankedFlex(puuid):
+    puuidToRankedFlexUrl = f"https://127.0.0.1:{toBase64.port}/lol-ranked/v1/ranked-stats/{puuid}"
+    x = requests.get(puuidToRankedFlexUrl, headers={"Authorization": f"Basic {toBase64.authCode}"}, verify=False)
+    y = json.loads(x.text)
+    stats = y["queueMap"]["RANKED_FLEX_SR"]
+    return stats
 
 # GET SUMID IN LOBBY
 allySumIDs = []
@@ -72,22 +79,26 @@ def getAllAllySumID():
     return allySumIDs
 
 # LOBBY TO INFO
+def render(stats, name, puuid, queueType):
+    tier = stats["tier"]
+    division = stats["division"]
+    lp = stats["leaguePoints"]
+    winCount = int(stats["wins"])
+    lostCount = int(stats["losses"])
+    point = "point"
+    points = "points"
+    if tier == "NONE":
+        print(f"{name}: Unranked")
+    else:
+        print(f"{name}: {tier} {division} {lp} {points if lp != 1 else point}, {winCount} wins {gameCount(queueType, puuid, CURRENTSEASON)-winCount} losses, {round(winCount/(gameCount(queueType, puuid, CURRENTSEASON))*100,2)}% winrate")    
+
 def lobbyInit():
     for sumID in getAllAllySumID():
         name = sumIDToName(sumID)
         puuid = sumIDToPuuid(sumID)
-        soloStats = puuidToRankedSolo(puuid)
-        tier = soloStats["tier"]
-        division = soloStats["division"]
-        lp = soloStats["leaguePoints"]
-        winCount = int(soloStats["wins"])
-        lostCount = int(soloStats["losses"])
-        point = "point"
-        points = "points"
-        if tier == "NONE":
-            print(f"{name}: Unranked")
-        else:
-            print(f"{name}: {tier} {division} {lp} {points if lp != 1 else point}, {winCount} wins {gameCount(SOLODUO, puuid, CURRENTSEASON)-winCount} losses, {round(winCount/(gameCount(SOLODUO, puuid, CURRENTSEASON))*100,2)}% winrate")
+        stats = puuidToRankedSolo(puuid)
+        render(stats, name, puuid, SOLODUO)
+        
 
 
 # GET ENEMY "summonerInternalName" when game starts loading
@@ -110,40 +121,26 @@ def getEnemySumIDs():
     for i in gameData["teamTwo"]:
         if "summonerId" in i:
             allSumIDs.append(int(i["summonerId"]))
+    enemySumIDs = []
     enemySumIDs = filter(filterAllySumIDs, allSumIDs)
     return enemySumIDs
 
-def gameStartInit():
+def gameStartInit(queueType):
     enemySumIDs = getEnemySumIDs()
     if enemySumIDs == []:
         raise Exception("No enemy found!")
     for sumID in enemySumIDs:
         name = sumIDToName(sumID)
         puuid = sumIDToPuuid(sumID)
-        soloStats = puuidToRankedSolo(puuid)
-        tier = soloStats["tier"]
-        division = soloStats["division"]
-        lp = soloStats["leaguePoints"]
-        winCount = int(soloStats["wins"])
-        lostCount = int(soloStats["losses"])
-        point = "point"
-        points = "points"
-        if tier == "NONE":
-            print(f"{name}: Unranked")
-        else:
-            print(f"{name}: {tier} {division} {lp} {points if lp != 1 else point}, {winCount} wins {gameCount(SOLODUO, puuid, CURRENTSEASON)-winCount} losses, {round(winCount/(gameCount(SOLODUO, puuid, CURRENTSEASON))*100,2)}% winrate")
+        if queueType == 1:
+            stats = puuidToRankedSolo(puuid)
+            render(stats, name, puuid, SOLODUO)
+        elif queueType == 2:
+            stats = puuidToRankedFlex(puuid)
+            render(stats, name, puuid, FLEX)
+        
 
 def queryByName(name):
     puuid = nameToPuuid(name)
-    soloStats = puuidToRankedSolo(puuid)
-    tier = soloStats["tier"]
-    division = soloStats["division"]
-    lp = soloStats["leaguePoints"]
-    winCount = int(soloStats["wins"])
-    lostCount = int(soloStats["losses"])
-    point = "point"
-    points = "points"
-    if tier == "NONE":
-        print(f"{name}: Unranked")
-    else:
-        print(f"{name}: {tier} {division} {lp} {points if lp != 1 else point}, {winCount} wins {gameCount(SOLODUO, puuid, CURRENTSEASON)-winCount} losses, {round(winCount/(gameCount(SOLODUO, puuid, CURRENTSEASON))*100,2)}% winrate")
+    stats = puuidToRankedSolo(puuid)
+    render(stats, name, puuid, SOLODUO)
