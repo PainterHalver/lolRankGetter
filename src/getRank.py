@@ -6,40 +6,40 @@ from utils import toBase64
 
 # NAME TO PUUID CODE
 def nameToPuuid(name):
-    nameToPuuidUrl = f"https://127.0.0.1:{port}/lol-summoner/v1/summoners?name={name}"
-    x = requests.get(nameToPuuidUrl, headers={"Authorization": f"Basic {authCode}"}, verify=False)
+    nameToPuuidUrl = f"https://127.0.0.1:{toBase64.port}/lol-summoner/v1/summoners?name={name}"
+    x = requests.get(nameToPuuidUrl, headers={"Authorization": f"Basic {toBase64.authCode}"}, verify=False)
     y = json.loads(x.text)
     puuid = y["puuid"]
     return puuid
 
 # SUMID TO PUUID CODE
 def sumIDToPuuid(sumID):
-    sumIDToPuuidUrl = f"https://127.0.0.1:{port}/lol-summoner/v1/summoners/{sumID}"
-    x = requests.get(sumIDToPuuidUrl, headers={"Authorization": f"Basic {authCode}"}, verify=False)
+    sumIDToPuuidUrl = f"https://127.0.0.1:{toBase64.port}/lol-summoner/v1/summoners/{sumID}"
+    x = requests.get(sumIDToPuuidUrl, headers={"Authorization": f"Basic {toBase64.authCode}"}, verify=False)
     y = json.loads(x.text)
     puuid = y["puuid"]
     return puuid
 
 # SUMID TO NAME
 def sumIDToName(sumID):
-    sumIDToNameUrl = f"https://127.0.0.1:{port}/lol-summoner/v1/summoners/{sumID}"
-    x = requests.get(sumIDToNameUrl, headers={"Authorization": f"Basic {authCode}"}, verify=False)
+    sumIDToNameUrl = f"https://127.0.0.1:{toBase64.port}/lol-summoner/v1/summoners/{sumID}"
+    x = requests.get(sumIDToNameUrl, headers={"Authorization": f"Basic {toBase64.authCode}"}, verify=False)
     y = json.loads(x.text)
     name = y["displayName"]
     return name
 
 # NAME TO SUMID
 def nameToSumID(name):
-    nameToSumIDUrl = f"https://127.0.0.1:{port}/lol-summoner/v1/summoners?name={name}"
-    x = requests.get(nameToSumIDUrl, headers={"Authorization": f"Basic {authCode}"}, verify=False)
+    nameToSumIDUrl = f"https://127.0.0.1:{toBase64.port}/lol-summoner/v1/summoners?name={name}"
+    x = requests.get(nameToSumIDUrl, headers={"Authorization": f"Basic {toBase64.authCode}"}, verify=False)
     y = json.loads(x.text)
     sumID = y["summonerId"]
     return sumID
 
 # PUUID TO RANKED INFO
 def puuidToRankedSolo(puuid):
-    puuidToRankedSoloUrl = f"https://127.0.0.1:{port}/lol-ranked/v1/ranked-stats/{puuid}"
-    x = requests.get(puuidToRankedSoloUrl, headers={"Authorization": f"Basic {authCode}"}, verify=False)
+    puuidToRankedSoloUrl = f"https://127.0.0.1:{toBase64.port}/lol-ranked/v1/ranked-stats/{puuid}"
+    x = requests.get(puuidToRankedSoloUrl, headers={"Authorization": f"Basic {toBase64.authCode}"}, verify=False)
     y = json.loads(x.text)
     soloStats = (y["queueMap"]["RANKED_SOLO_5x5"])
     return soloStats
@@ -47,8 +47,8 @@ def puuidToRankedSolo(puuid):
 # GET SUMID IN LOBBY
 allySumIDs = []
 def getAllAllySumID():
-    getAllSumIDUrl = f"https://127.0.0.1:{port}/lol-champ-select/v1/session"
-    x = requests.get(getAllSumIDUrl, headers={"Authorization": f"Basic {authCode}"}, verify=False)
+    getAllSumIDUrl = f"https://127.0.0.1:{toBase64.port}/lol-champ-select/v1/session"
+    x = requests.get(getAllSumIDUrl, headers={"Authorization": f"Basic {toBase64.authCode}"}, verify=False)
     y = json.loads(x.text)
     myTeam = y["myTeam"]
     global allySumIDs
@@ -79,19 +79,25 @@ def filterAllySumIDs(variable):
         return True
 
 def getEnemySumIDs():
-    getEnemyNameUrl = f"https://127.0.0.1:{port}/lol-gameflow/v1/session"
-    x = requests.get(getEnemyNameUrl, headers={"Authorization": f"Basic {authCode}"}, verify=False)
+    getEnemyNameUrl = f"https://127.0.0.1:{toBase64.port}/lol-gameflow/v1/session"
+    x = requests.get(getEnemyNameUrl, headers={"Authorization": f"Basic {toBase64.authCode}"}, verify=False)
     y = json.loads(x.text)
-    allPlayers= y["gameData"]["playerChampionSelections"]
+    gameData = y["gameData"]
     allSumIDs = []
-    for i in allPlayers:
-        sumID = nameToSumID(i["summonerInternalName"])
-        allSumIDs.append(sumID)
+    for i in gameData["teamOne"]:
+        if "summonerId" in i:
+            allSumIDs.append(int(i["summonerId"]))
+    for i in gameData["teamTwo"]:
+        if "summonerId" in i:
+            allSumIDs.append(int(i["summonerId"]))
     enemySumIDs = filter(filterAllySumIDs, allSumIDs)
     return enemySumIDs
 
 def gameStartInit():
-    for sumID in getEnemySumIDs():
+    enemySumIDs = getEnemySumIDs()
+    if enemySumIDs == []:
+        raise Exception("No enemy found!")
+    for sumID in enemySumIDs:
         name = sumIDToName(sumID)
         puuid = sumIDToPuuid(sumID)
         soloStats = puuidToRankedSolo(puuid)
