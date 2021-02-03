@@ -132,3 +132,18 @@ def gameStartInit():
             print(f"{name}: Unranked")
         else:
             print(f"{name}: {tier} {division} {lp} {points if lp != 1 else point}, {winCount} wins {gameCount(SOLODUO, puuid, CURRENTSEASON)-winCount} losses, {round(winCount/(gameCount(SOLODUO, puuid, CURRENTSEASON))*100,2)}% winrate")
+
+def queryByName(name):
+    puuid = nameToPuuid(name)
+    soloStats = puuidToRankedSolo(puuid)
+    tier = soloStats["tier"]
+    division = soloStats["division"]
+    lp = soloStats["leaguePoints"]
+    winCount = int(soloStats["wins"])
+    lostCount = int(soloStats["losses"])
+    point = "point"
+    points = "points"
+    if tier == "NONE":
+        print(f"{name}: Unranked")
+    else:
+        print(f"{name}: {tier} {division} {lp} {points if lp != 1 else point}, {winCount} wins {gameCount(SOLODUO, puuid, CURRENTSEASON)-winCount} losses, {round(winCount/(gameCount(SOLODUO, puuid, CURRENTSEASON))*100,2)}% winrate")
