@@ -9,7 +9,6 @@ except:
 
 
 while True:
-    option = input("Press Enter to continue...")
     os.system("cls")
     print(f"Game state: {getGameState()}")
     if getGameState() == GameState.CHAMPSELECT:
@@ -18,3 +17,5 @@ while True:
         getRank(GameState.INPROGRESS)
     else:
         print("No suitable gamestate found")
+
+    option = input("Press Enter to continue...")

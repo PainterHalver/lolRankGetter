@@ -50,6 +50,3 @@ def getRank(gameState):
     print(soloDataframe)
     print("-------------------------------------------------------------------------")
     print(flexDataframe)
-
-
-getRank(GameState.INPROGRESS)
