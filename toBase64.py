@@ -2,7 +2,7 @@ import base64
 
 # GET AND PARSE THE 'LOCKFILE'
 try:
-    file = open("D:/LMHT/32787/LeagueClient/lockfile")
+    file = open("D:/Games/32787/LeagueClient/lockfile")
 except:
     input("'lockfile' not found! Maybe open the client first? Press Enter to exit...")
 
