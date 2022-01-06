@@ -1,5 +1,6 @@
-import getRank
-from getGameState import getGameState
+from getRank import getRank
+from getGameState import getGameState, GameState
+import os
 
 try:
     print("Game state:", getGameState())
@@ -9,5 +10,11 @@ except:
 
 while True:
     option = input("Press Enter to continue...")
-    
-quit()
+    os.system("cls")
+    print(f"Game state: {getGameState()}")
+    if getGameState() == GameState.CHAMPSELECT:
+        getRank(GameState.CHAMPSELECT)
+    elif getGameState() == GameState.INPROGRESS:
+        getRank(GameState.INPROGRESS)
+    else:
+        print("No suitable gamestate found")

@@ -2,7 +2,7 @@ from RankedStats import RankedStats
 from api import call, BASE_URL
 
 
-class Summonner:
+class Summoner:
     accountId = 0
     name = ""
     puuid = ""
@@ -10,14 +10,14 @@ class Summonner:
 
     # rankedStats
 
-    def __init__(self, name="", puuid="", summonnerId=0):
+    def __init__(self, name="", puuid="", summonerId=0):
         url = ""
-        if (name != ""):
+        if name != "":
             url = f"{BASE_URL}/lol-summoner/v1/summoners?name={name}"
-        elif (puuid != ""):
+        elif puuid != "":
             url = f"{BASE_URL}/lol-summoner/v1/summoners-by-puuid-cached/{puuid}"
-        elif (summonnerId != 0):
-            url = f"{BASE_URL}/lol-summoner/v1/summoners/{summonnerId}"
+        elif summonerId != 0:
+            url = f"{BASE_URL}/lol-summoner/v1/summoners/{summonerId}"
 
         self.__populateData(url)
         self.rankedStats = RankedStats(self.puuid)
@@ -29,6 +29,6 @@ class Summonner:
         self.puuid = data["puuid"]
         self.summonerId = data["summonerId"]
 
-# painter = Summonner("PainterHalver")
+# painter = Summoner("PainterHalver")
 # print(painter.rankedStats.RANKED_SOLO_5x5)
 
