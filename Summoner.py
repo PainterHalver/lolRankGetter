@@ -1,5 +1,6 @@
 from RankedStats import RankedStats
 from api import call, BASE_URL
+from MatchHistory import MatchHistory
 
 
 class Summoner:
@@ -9,6 +10,7 @@ class Summoner:
     summonerId = 0
 
     # rankedStats
+    # matchHistory
 
     def __init__(self, name="", puuid="", summonerId=0):
         url = ""
@@ -21,6 +23,7 @@ class Summoner:
 
         self.__populateData(url)
         self.rankedStats = RankedStats(self.puuid)
+        self.matchHistory = MatchHistory(self.puuid)
 
     def __populateData(self, url):
         data = call(url)
@@ -31,4 +34,5 @@ class Summoner:
 
 # painter = Summoner("PainterHalver")
 # print(painter.rankedStats.RANKED_SOLO_5x5)
+# print(painter.matchHistory.last20)
 

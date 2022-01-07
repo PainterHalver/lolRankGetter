@@ -1,5 +1,5 @@
 from getRank import getRank
-from getGameState import getGameState, GameState
+from GameState import getGameState, GameState
 import os
 
 try:

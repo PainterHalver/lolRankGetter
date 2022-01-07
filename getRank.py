@@ -1,6 +1,6 @@
 from api import call, BASE_URL
 from Summoner import Summoner
-from getGameState import GameState
+from GameState import GameState
 import pandas as pd
 
 
@@ -31,21 +31,23 @@ def getRank(gameState):
         all = getAllChampSelect()
     elif gameState == GameState.INPROGRESS:
         all = getAllInProgress()
-    soloDataframe = pd.DataFrame(columns=['Name', 'Rank', 'LP', 'Wins'])
+    soloDataframe = pd.DataFrame(columns=['Name', 'Rank', 'LP', 'Wins', "Last 20 Games"])
     for p in all:
         soloDataframe = soloDataframe.append({
             "Name": p.name,
             "Rank": f"{p.rankedStats.RANKED_SOLO_5x5['tier']} {p.rankedStats.RANKED_SOLO_5x5['division']}",
             "LP": f"{p.rankedStats.RANKED_SOLO_5x5['leaguePoints']} LP",
-            "Wins": p.rankedStats.RANKED_SOLO_5x5['wins']
+            "Wins": p.rankedStats.RANKED_SOLO_5x5['wins'],
+            "Last 20 Games": f"{p.matchHistory.last20} ({p.matchHistory.winCount}W / {p.matchHistory.loseCount}L)"
         }, ignore_index=True)
-    flexDataframe = pd.DataFrame(columns=['Name', 'Rank', 'LP', 'Wins'])
+    flexDataframe = pd.DataFrame(columns=['Name', 'Rank', 'LP', 'Wins', "Last 20 Games"])
     for p in all:
         flexDataframe = flexDataframe.append({
             "Name": p.name,
             "Rank": f"{p.rankedStats.RANKED_FLEX_SR['tier']} {p.rankedStats.RANKED_FLEX_SR['division']}",
             "LP": f"{p.rankedStats.RANKED_FLEX_SR['leaguePoints']} LP",
-            "Wins": p.rankedStats.RANKED_FLEX_SR['wins']
+            "Wins": p.rankedStats.RANKED_FLEX_SR['wins'],
+            "Last 20 Games": f"{p.matchHistory.last20} ({p.matchHistory.winCount}W / {p.matchHistory.loseCount}L)"
         }, ignore_index=True)
     print(soloDataframe)
     print("-------------------------------------------------------------------------")
