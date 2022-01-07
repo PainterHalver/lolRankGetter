@@ -1,2 +1,2 @@
-# DEPRECATED (riot removed several lcu api endpoints)
+# REVAMPED BRANCH
 Get all Summoners' rank using API provided by LCU (Mostly benefit Garena regions with no OP.gg)
