@@ -1,8 +1,9 @@
 import base64
+import yaml
 
 # GET AND PARSE THE 'LOCKFILE'
 try:
-    file = open("D:/Games/32787/LeagueClient/lockfile")
+    file = open(yaml.safe_load(open("config.yml"))["lockfilepath"])
 except:
     input("'lockfile' not found! Maybe open the client first? Press Enter to exit...")
 
