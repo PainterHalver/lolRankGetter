@@ -3,10 +3,10 @@ import yaml
 
 # GET AND PARSE THE 'LOCKFILE'
 try:
-    file = open(yaml.safe_load(open("config.yml"))["lockfilepath"])
+    path = yaml.safe_load(open("config.yml"))["lockfilepath"]
+    file = open(path)
 except:
     input("'lockfile' not found! Maybe open the client first? Press Enter to exit...")
-
 
 lockfile = file.readline().split(":")
 
