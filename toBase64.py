@@ -1,9 +1,10 @@
 import base64
 import yaml
+import config
 
 # GET AND PARSE THE 'LOCKFILE'
 try:
-    path = yaml.safe_load(open("config.yml"))["lockfilepath"]
+    path = config.lockfilepath
     file = open(path)
 except:
     input("'lockfile' not found! Maybe open the client first? Press Enter to exit...")
