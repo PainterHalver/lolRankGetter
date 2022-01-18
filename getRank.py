@@ -2,6 +2,7 @@ from api import call, BASE_URL
 from Summoner import Summoner
 from GameState import GameState
 import pandas as pd
+from multiprocessing.dummy import Pool as ThreadPool
 
 
 def getAllChampSelect():
@@ -27,28 +28,40 @@ def getAllInProgress():
 
 
 def getRank(gameState):
+    all = []
     if gameState == GameState.CHAMPSELECT:
         all = getAllChampSelect()
     elif gameState == GameState.INPROGRESS:
         all = getAllInProgress()
-    soloDataframe = pd.DataFrame(columns=['Name', 'Rank', 'LP', 'Wins', "Last 20 Games"])
-    for p in all:
-        soloDataframe = soloDataframe.append({
-            "Name": p.name,
-            "Rank": f"{p.rankedStats.RANKED_SOLO_5x5['tier']} {p.rankedStats.RANKED_SOLO_5x5['division']}",
-            "LP": f"{p.rankedStats.RANKED_SOLO_5x5['leaguePoints']} LP",
-            "Wins": p.rankedStats.RANKED_SOLO_5x5['wins'],
-            "Last 20 Games": f"{p.matchHistory.last20} ({p.matchHistory.winCount}W / {p.matchHistory.loseCount}L)"
-        }, ignore_index=True)
-    flexDataframe = pd.DataFrame(columns=['Name', 'Rank', 'LP', 'Wins', "Last 20 Games"])
-    for p in all:
-        flexDataframe = flexDataframe.append({
-            "Name": p.name,
-            "Rank": f"{p.rankedStats.RANKED_FLEX_SR['tier']} {p.rankedStats.RANKED_FLEX_SR['division']}",
-            "LP": f"{p.rankedStats.RANKED_FLEX_SR['leaguePoints']} LP",
-            "Wins": p.rankedStats.RANKED_FLEX_SR['wins'],
-            "Last 20 Games": f"{p.matchHistory.last20} ({p.matchHistory.winCount}W / {p.matchHistory.loseCount}L)"
-        }, ignore_index=True)
+
+    # soloDataframe = pd.DataFrame(columns=['Name', 'Rank', 'LP', 'Wins', "Last 20 Games"])
+    # flexDataframe = pd.DataFrame(columns=['Name', 'Rank', 'LP', 'Wins', "Last 20 Games"])
+
+    # https://stackoverflow.com/questions/40939078/pandas-dataframe-in-multiple-threads
+    pool = ThreadPool(10)
+
+    def getSoloData(player):
+        return {
+            "Name": player.name,
+            "Rank": f"{player.rankedStats.RANKED_SOLO_5x5['tier']} {player.rankedStats.RANKED_SOLO_5x5['division']}",
+            "LP": f"{player.rankedStats.RANKED_SOLO_5x5['leaguePoints']} LP",
+            "Wins": player.rankedStats.RANKED_SOLO_5x5['wins'],
+            "Last 20 Games": f"{player.matchHistory.last20} ({player.matchHistory.winCount}W / {player.matchHistory.loseCount}L)"
+        }
+    def getFlexData(player):
+        return {
+            "Name": player.name,
+            "Rank": f"{player.rankedStats.RANKED_FLEX_SR['tier']} {player.rankedStats.RANKED_FLEX_SR['division']}",
+            "LP": f"{player.rankedStats.RANKED_FLEX_SR['leaguePoints']} LP",
+            "Wins": player.rankedStats.RANKED_FLEX_SR['wins'],
+            "Last 20 Games": f"{player.matchHistory.last20} ({player.matchHistory.winCount}W / {player.matchHistory.loseCount}L)"
+        }
+    resultsSolo = pool.map(getSoloData, all)
+    resultsFlex = pool.map(getFlexData, all)
+
+    soloDataframe = pd.DataFrame(resultsSolo)
+    flexDataframe = pd.DataFrame(resultsFlex)
+
     print(soloDataframe)
     print("-------------------------------------------------------------------------")
     print(flexDataframe)
