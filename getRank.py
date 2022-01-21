@@ -4,26 +4,31 @@ from GameState import GameState
 import pandas as pd
 from multiprocessing.dummy import Pool as ThreadPool
 
+pool = ThreadPool(10)
+
+
+def getPlayer(player):
+    return Summoner(summonerId=player["summonerId"])
+
 
 def getAllChampSelect():
     data = call(f"{BASE_URL}/lol-champ-select/v1/session")
     myTeam = data["myTeam"]
-    allies = []
-    for player in myTeam:
-        allies.append(Summoner(summonerId=player["summonerId"]))
+
+    allies = pool.map(getPlayer, myTeam)
+
     return allies
 
 
 def getAllInProgress():
     data = call(f"{BASE_URL}/lol-gameflow/v1/session")
     gameData = data["gameData"]
+    teamOne = gameData["teamOne"]
+    teamTwo = gameData["teamTwo"]
+
     allSums = []
-    for p in gameData["teamOne"]:
-        if "summonerId" in p:
-            allSums.append(Summoner(summonerId=int(p["summonerId"])))
-    for p in gameData["teamTwo"]:
-        if "summonerId" in p:
-            allSums.append(Summoner(summonerId=int(p["summonerId"])))
+    allSums = allSums + pool.map(getPlayer, teamOne)
+    allSums = allSums + pool.map(getPlayer, teamTwo)
     return allSums
 
 
@@ -34,12 +39,7 @@ def getRank(gameState):
     elif gameState == GameState.INPROGRESS:
         all = getAllInProgress()
 
-    # soloDataframe = pd.DataFrame(columns=['Name', 'Rank', 'LP', 'Wins', "Last 20 Games"])
-    # flexDataframe = pd.DataFrame(columns=['Name', 'Rank', 'LP', 'Wins', "Last 20 Games"])
-
     # https://stackoverflow.com/questions/40939078/pandas-dataframe-in-multiple-threads
-    pool = ThreadPool(10)
-
     def getSoloData(player):
         return {
             "Name": player.name,
@@ -48,6 +48,7 @@ def getRank(gameState):
             "Wins": player.rankedStats.RANKED_SOLO_5x5['wins'],
             "Last 20 Games": f"{player.matchHistory.last20} ({player.matchHistory.winCount}W / {player.matchHistory.loseCount}L)"
         }
+
     def getFlexData(player):
         return {
             "Name": player.name,
@@ -56,6 +57,7 @@ def getRank(gameState):
             "Wins": player.rankedStats.RANKED_FLEX_SR['wins'],
             "Last 20 Games": f"{player.matchHistory.last20} ({player.matchHistory.winCount}W / {player.matchHistory.loseCount}L)"
         }
+
     resultsSolo = pool.map(getSoloData, all)
     resultsFlex = pool.map(getFlexData, all)
 
