@@ -8,7 +8,7 @@ pool = ThreadPool(10)
 
 
 def getPlayer(player):
-    return Summoner(summonerId=player["summonerId"])
+    return Summoner(summonerId=int(player["summonerId"]))
 
 
 def getAllChampSelect():
